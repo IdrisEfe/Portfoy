@@ -56,7 +56,9 @@ http://localhost:3000/api/auth/github/callback
 
 The GitHub OAuth **Homepage URL** can be `http://localhost:3000`, but the separate **Authorization callback URL** must include the full `/api/auth/github/callback` path. Local development is pinned to port `3000`; if that port is occupied, stop the other process instead of accepting Next.js's fallback port.
 
-Copy `.env.example` to `.env.local`, keep `SITE_URL=http://localhost:3000`, configure the OAuth credentials, set `ADMIN_GITHUB_USER_ID` to your immutable GitHub numeric ID, and generate a long random `ADMIN_SESSION_SECRET`. Set `GITHUB_CONTENT_REPO` after creating the public remote repository.
+Copy `.env.example` to `.env.local`, keep `SITE_URL=http://localhost:3000`, configure the OAuth credentials, set `ADMIN_GITHUB_USER_ID` to your immutable GitHub numeric ID, and generate a long random `ADMIN_SESSION_SECRET`. Set `GITHUB_CONTENT_REPO=Portfoy` and `GITHUB_CONTENT_BRANCH=content`.
+
+Admin-managed content and uploads live on the separate `content` branch. The publisher creates that branch from the repository's default branch on its first publication. Code remains on `main`, so an admin edit does not move the local development branch ahead or behind and does not require VS Code synchronization. Uploaded assets use their public GitHub raw URL.
 
 For local development only, `ADMIN_DEV_BYPASS=true` unlocks the editor without OAuth. The bypass is ignored in production.
 

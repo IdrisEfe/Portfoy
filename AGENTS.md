@@ -124,6 +124,7 @@ Visitors must explicitly choose which Project Laboratory experiment to load. Do 
 - Combine curated accomplishments with current activity.
 - GitHub-derived updates may refresh every 5–15 minutes.
 - Admin-published site content is read back from the configured GitHub repository through a no-cache refresh path with the checked-in JSON as a fallback, so local and deployed visitors can see the published version without requiring a local pull.
+- Admin-managed content and uploaded assets use a dedicated `content` branch that is created automatically from the repository default branch on first publication. Code remains on `main`; content publications must not make the local code branch require synchronization or trigger code deployments.
 - LinkedIn-related entries publish immediately after owner review and publication.
 - Present activity as a coherent narrative rather than a raw feed.
 - Clearly distinguish source, date, status, and whether an entry is manually curated or automatically derived when that distinction matters to users.
