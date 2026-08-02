@@ -18,13 +18,24 @@ function patchNextBrowserLogger() {
     builtinModules.map((specifier) => specifier.replace(/^node:/, "")),
   );
   const requirePattern =
-    /\brequire\((["'])((?:node:)?[a-zA-Z0-9_./-]+)\1\)/g;
+    /\brequire\((["'])((?:node:)?[@a-zA-Z0-9_./-]+)\1\)/g;
   const replacements = new Map();
 
   for (const match of handler.matchAll(requirePattern)) {
-    const normalized = match[2].replace(/^node:/, "");
-    if (knownBuiltins.has(normalized) && !replacements.has(normalized)) {
-      replacements.set(normalized, `__iesyNodeBuiltin${replacements.size}`);
+    const specifier = match[2];
+    const normalized = specifier.replace(/^node:/, "");
+    const isBuiltin = knownBuiltins.has(normalized);
+    const isPackageImport =
+      !specifier.startsWith(".") &&
+      !specifier.startsWith("/") &&
+      !/^[a-zA-Z]:/.test(specifier);
+
+    if ((isBuiltin || isPackageImport) && !replacements.has(specifier)) {
+      replacements.set(specifier, {
+        identifier: `__iesyExternal${replacements.size}`,
+        isBuiltin,
+        normalized,
+      });
     }
   }
 
@@ -33,20 +44,26 @@ function patchNextBrowserLogger() {
   }
 
   const imports = [];
-  for (const [specifier, identifier] of replacements) {
+  for (const [specifier, replacement] of replacements) {
+    const { identifier, isBuiltin, normalized } = replacement;
     const escapedSpecifier = specifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     const pattern = new RegExp(
-      `\\brequire\\((["'])(?:node:)?${escapedSpecifier}\\1\\)`,
+      `\\brequire\\((["'])${escapedSpecifier}\\1\\)`,
       "g",
     );
     handler = handler.replace(pattern, identifier);
 
-    if (specifier === "inspector") {
+    if (isBuiltin && normalized === "inspector") {
       imports.push(`const ${identifier} = { url: () => undefined };`);
+    } else if (isBuiltin) {
+      imports.push(
+        `import * as ${identifier}Module from "node:${normalized}";`,
+        `const ${identifier} = { ...(${identifier}Module.default ?? ${identifier}Module) };`,
+      );
     } else {
       imports.push(
-        `import * as ${identifier}Module from "node:${specifier}";`,
-        `const ${identifier} = { ...${identifier}Module };`,
+        `import * as ${identifier}Module from ${JSON.stringify(specifier)};`,
+        `const ${identifier} = ${identifier}Module.default ?? ${identifier}Module;`,
       );
     }
   }
