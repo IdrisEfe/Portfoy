@@ -1,0 +1,6 @@
+"use client";
+import { PageHeading } from "./page-heading";
+import { useSite } from "./site-provider";
+import { skills } from "@/lib/content";
+const tr: Record<string, string> = { Building: "Üretim", Engineering: "Mühendislik", Exploring: "Keşif", "Product thinking": "Ürün düşüncesi", "Rapid prototyping": "Hızlı prototipleme", "Systems design": "Sistem tasarımı", "Web applications": "Web uygulamaları", APIs: "API’ler", Automation: "Otomasyon", "Creative coding": "Yaratıcı kodlama", "Agentic systems": "Ajan tabanlı sistemler", "Interactive media": "Etkileşimli medya" };
+export function SkillsExperience() { const { locale } = useSite(); return <div className="page-wrap"><PageHeading index="04" eyebrow={{ en: "CAPABILITY IS A NETWORK", tr: "YETENEK BİR AĞDIR" }} title={{ en: "Not a progress-bar person.", tr: "Yüzde çubuklarından ibaret değilim." }} body={{ en: "Skills are relationships between practice, curiosity, and shipped work—not arbitrary percentages.", tr: "Yetenekler rastgele yüzdeler değil; pratik, merak ve tamamlanan işler arasındaki ilişkilerdir." }} /><div className="skills-map">{skills.map((group, i) => <article key={group.name}><span>0{i + 1}</span><h2>{locale === "tr" ? tr[group.name] || group.name : group.name}</h2>{group.items.map((item) => <p key={item}>{locale === "tr" ? tr[item] || item : item}</p>)}</article>)}</div></div>; }

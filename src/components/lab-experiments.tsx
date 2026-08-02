@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Crosshair, Droplets, Sparkles, X } from "lucide-react";
+import { useSite } from "./site-provider";
 
 type Experiment = "target" | "fluid" | "fireworks";
 const choices = [
-  { id: "target" as const, title: "Signal / target", body: "A quiet test of timing and precision.", icon: Crosshair },
-  { id: "fluid" as const, title: "Liquid cursor", body: "Pull a field of light through digital fluid.", icon: Droplets },
-  { id: "fireworks" as const, title: "Night signals", body: "Build a sky from particles, rhythm, and light.", icon: Sparkles },
+  { id: "target" as const, title: { en: "Signal / target", tr: "Sinyal / hedef" }, body: { en: "A quiet test of timing and precision.", tr: "Zamanlama ve hassasiyet için sakin bir test." }, icon: Crosshair },
+  { id: "fluid" as const, title: { en: "Liquid cursor", tr: "Akışkan imleç" }, body: { en: "Pull a field of light through digital fluid.", tr: "Dijital bir akışkanın içinden ışık alanını sürükle." }, icon: Droplets },
+  { id: "fireworks" as const, title: { en: "Night signals", tr: "Gece sinyalleri" }, body: { en: "Build a sky from particles, rhythm, and light.", tr: "Parçacıklar, ritim ve ışıktan bir gökyüzü kur." }, icon: Sparkles },
 ];
 
 function ExperimentCanvas({ type }: { type: Experiment }) {
@@ -105,8 +106,9 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
 
 export function LabExperiments() {
   const [active, setActive] = useState<Experiment | null>(null);
+  const { locale } = useSite();
   return <div className="lab-grid">
-    {choices.map(({ id, title, body, icon: Icon }) => <button key={id} className="lab-card" onClick={() => setActive(id)}><Icon size={24} /><span>LOAD EXPERIMENT</span><h3>{title}</h3><p>{body}</p></button>)}
-    {active && <div className="experiment-stage"><button onClick={() => setActive(null)}><X size={18} /> Unload</button><ExperimentCanvas type={active} /></div>}
+    {choices.map(({ id, title, body, icon: Icon }) => <button key={id} className="lab-card" onClick={() => setActive(id)}><Icon size={24} /><span>{locale === "en" ? "LOAD EXPERIMENT" : "DENEYİ YÜKLE"}</span><h3>{title[locale]}</h3><p>{body[locale]}</p></button>)}
+    {active && <div className="experiment-stage"><button onClick={() => setActive(null)}><X size={18} /> {locale === "en" ? "Unload" : "Kapat"}</button><ExperimentCanvas type={active} /></div>}
   </div>;
 }
