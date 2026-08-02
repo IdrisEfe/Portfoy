@@ -19,10 +19,11 @@ function patchNextBrowserLogger() {
   );
   const requirePattern =
     /\brequire\((["'])((?:node:)?[@a-zA-Z0-9_./-]+)\1\)/g;
+  const turbopackExternalPattern =
+    /\b[a-zA-Z_$][\w$]*\.x\((["'])([@a-zA-Z0-9_./:-]+)\1,\(\)=>[a-zA-Z_$][\w$]*\((["'])\2\3\)(?:,!0|,true|,!1|,false)?\)/g;
   const replacements = new Map();
 
-  for (const match of handler.matchAll(requirePattern)) {
-    const specifier = match[2];
+  const registerExternal = (specifier) => {
     const normalized = specifier.replace(/^node:/, "");
     const isBuiltin = knownBuiltins.has(normalized);
     const isPackageImport =
@@ -37,6 +38,14 @@ function patchNextBrowserLogger() {
         normalized,
       });
     }
+  };
+
+  for (const match of handler.matchAll(requirePattern)) {
+    registerExternal(match[2]);
+  }
+
+  for (const match of handler.matchAll(turbopackExternalPattern)) {
+    registerExternal(match[2]);
   }
 
   if (replacements.size === 0) {
@@ -47,17 +56,17 @@ function patchNextBrowserLogger() {
   for (const [specifier, replacement] of replacements) {
     const { identifier, isBuiltin, normalized } = replacement;
     const escapedSpecifier = specifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const externalRequirePattern = new RegExp(
+      `\\b[a-zA-Z_$][\\w$]*\\.x\\((["'])${escapedSpecifier}\\1,\\(\\)=>[a-zA-Z_$][\\w$]*\\((["'])${escapedSpecifier}\\2\\)(?:,!0|,true|,!1|,false)?\\)`,
+      "g",
+    );
+    handler = handler.replace(externalRequirePattern, identifier);
+
     const pattern = new RegExp(
       `\\brequire\\((["'])${escapedSpecifier}\\1\\)`,
       "g",
     );
     handler = handler.replace(pattern, identifier);
-
-    const externalRequirePattern = new RegExp(
-      `\\b[a-zA-Z_$][\\w$]*\\.x\\((["'])${escapedSpecifier}\\1,\\(\\)=>${identifier}(?:,!1|,false)?\\)`,
-      "g",
-    );
-    handler = handler.replace(externalRequirePattern, identifier);
 
     if (isBuiltin && normalized === "inspector") {
       imports.push(`const ${identifier} = { url: () => undefined };`);
