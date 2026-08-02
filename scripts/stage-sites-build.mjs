@@ -38,8 +38,10 @@ function patchNextBrowserLogger() {
     'import * as __iesyNodePath from "node:path";\n' +
     'import * as __iesyNodeUtil from "node:util";\n' +
     'import * as __iesyNodeCrypto from "node:crypto";\n' +
-    'import * as __iesyNodeTimers from "node:timers";\n' +
-    'import * as __iesyNodeTimersPromises from "node:timers/promises";\n' +
+    'import * as __iesyNodeTimersModule from "node:timers";\n' +
+    'import * as __iesyNodeTimersPromisesModule from "node:timers/promises";\n' +
+    "const __iesyNodeTimers = { ...__iesyNodeTimersModule };\n" +
+    "const __iesyNodeTimersPromises = { ...__iesyNodeTimersPromisesModule };\n" +
     "const __iesyNodeInspector = { url: () => undefined };\n" +
     handler;
   writeFileSync(handlerPath, handler, "utf8");
