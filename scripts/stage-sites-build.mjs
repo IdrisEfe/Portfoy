@@ -8,12 +8,12 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { builtinModules, createRequire } from "node:module";
-import { dirname, join, relative, resolve } from "node:path";
+import { builtinModules } from "node:module";
+import { dirname, join, resolve } from "node:path";
+import { buildSync } from "esbuild";
 
 function patchNextBrowserLogger() {
   const handlerPath = ".open-next/server-functions/default/handler.mjs";
-  const handlerRequire = createRequire(resolve(handlerPath));
   let handler = readFileSync(handlerPath, "utf8");
   const knownBuiltins = new Set(
     builtinModules.map((specifier) => specifier.replace(/^node:/, "")),
@@ -70,6 +70,7 @@ function patchNextBrowserLogger() {
   }
 
   const imports = [];
+  const packageExternals = [];
   for (const [specifier, replacement] of replacements) {
     const { identifier, isBuiltin, normalized } = replacement;
     const escapedSpecifier = specifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -93,18 +94,38 @@ function patchNextBrowserLogger() {
         `const ${identifier} = { ...(${identifier}Module.default ?? ${identifier}Module) };`,
       );
     } else {
-      let importSpecifier = relative(
-        dirname(handlerPath),
-        handlerRequire.resolve(specifier),
-      ).replaceAll("\\", "/");
-      if (!importSpecifier.startsWith(".")) {
-        importSpecifier = `./${importSpecifier}`;
-      }
+      const exportName = `iesyBundledExternal${packageExternals.length}`;
+      packageExternals.push({ exportName, specifier });
       imports.push(
-        `import * as ${identifier}Module from ${JSON.stringify(importSpecifier)};`,
-        `const ${identifier} = ${identifier}Module.default ?? ${identifier}Module;`,
+        `import { ${exportName} as ${identifier} } from "./__iesy-externals.mjs";`,
       );
     }
+  }
+
+  if (packageExternals.length > 0) {
+    const entrySource = packageExternals
+      .flatMap(({ exportName, specifier }, index) => [
+        `import * as iesyPackage${index} from ${JSON.stringify(specifier)};`,
+        `export const ${exportName} = iesyPackage${index}.default ?? iesyPackage${index};`,
+      ])
+      .join("\n");
+    buildSync({
+      stdin: {
+        contents: entrySource,
+        resolveDir: resolve(dirname(handlerPath)),
+        sourcefile: "iesy-externals-entry.mjs",
+      },
+      outfile: resolve(dirname(handlerPath), "__iesy-externals.mjs"),
+      bundle: true,
+      format: "esm",
+      minify: true,
+      platform: "node",
+      target: "es2022",
+      external: [
+        ...knownBuiltins,
+        ...[...knownBuiltins].map((specifier) => `node:${specifier}`),
+      ],
+    });
   }
 
   const externalEntries = [...replacements].map(
