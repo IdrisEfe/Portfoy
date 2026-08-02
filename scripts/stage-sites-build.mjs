@@ -53,6 +53,12 @@ function patchNextBrowserLogger() {
     );
     handler = handler.replace(pattern, identifier);
 
+    const externalRequirePattern = new RegExp(
+      `\\b[a-zA-Z_$][\\w$]*\\.x\\((["'])${escapedSpecifier}\\1,\\(\\)=>${identifier}(?:,!1|,false)?\\)`,
+      "g",
+    );
+    handler = handler.replace(externalRequirePattern, identifier);
+
     if (isBuiltin && normalized === "inspector") {
       imports.push(`const ${identifier} = { url: () => undefined };`);
     } else if (isBuiltin) {

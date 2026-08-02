@@ -22,7 +22,7 @@ function run(command, args, env = process.env) {
 }
 
 if (process.env.IESY_OPENNEXT_INNER_BUILD === "1") {
-  run(executable("next"), ["build", "--webpack"]);
+  run(executable("next"), ["build"]);
 } else {
   run(executable("opennextjs-cloudflare"), ["build"], {
     ...process.env,
