@@ -40,6 +40,22 @@ function patchNextBrowserLogger() {
     }
   };
 
+  const turbopackRuntimeExternals = [
+    "next/dist/compiled/@opentelemetry/api",
+    "next/dist/compiled/next-server/app-page-turbo.runtime.prod.js",
+    "next/dist/compiled/next-server/app-route-turbo.runtime.prod.js",
+    "next/dist/server/app-render/action-async-storage.external.js",
+    "next/dist/server/app-render/after-task-async-storage.external.js",
+    "next/dist/server/app-render/dynamic-access-async-storage.external.js",
+    "next/dist/server/app-render/work-async-storage.external.js",
+    "next/dist/server/app-render/work-unit-async-storage.external.js",
+    "next/dist/shared/lib/no-fallback-error.external.js",
+  ];
+
+  for (const specifier of turbopackRuntimeExternals) {
+    registerExternal(specifier);
+  }
+
   for (const match of handler.matchAll(requirePattern)) {
     registerExternal(match[2]);
   }
