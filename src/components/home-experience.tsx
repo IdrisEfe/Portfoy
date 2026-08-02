@@ -31,7 +31,7 @@ export function HomeExperience({ repositories }: { repositories: Repository[] })
           </div>
         </div>
       </div>
-      <div className="hero-mask"><DigitalMask /><div className="mask-label top">IDENTITY / LIVE</div><div className="mask-label bottom">MOVE TO INTERRUPT</div></div>
+      <div className="hero-mask"><DigitalMask mode={siteContent.avatar.mode} /><div className="mask-label top">IDENTITY / 3D</div><div className="mask-label bottom">MOVE TO REORIENT · TAP TO PULSE</div></div>
       <a href="#signals" className="scroll-cue"><ArrowDown size={17} /> SCROLL TO SIGNALS</a>
     </section>
     <section className="signal-strip"><span>01</span><p>{text.descriptor}</p><span>IST · UTC+3</span><span>AVAILABLE / SELECTIVELY</span></section>

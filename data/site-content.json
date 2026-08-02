@@ -16,6 +16,7 @@
       "cta": "Eee, ne duruyoruz?"
     }
   },
+  "avatar": { "mode": "face" },
   "socials": [
     { "id": "github", "label": "GitHub", "href": "https://github.com/IdrisEfe", "visible": true, "order": 1 },
     { "id": "linkedin", "label": "LinkedIn", "href": "https://www.linkedin.com/in/i-efe-ye%C5%9Filda%C4%9F-0a6687313/", "visible": true, "order": 2 },
