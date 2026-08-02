@@ -121,6 +121,9 @@ function patchNextBrowserLogger() {
       minify: true,
       platform: "node",
       target: "es2022",
+      alias: {
+        "@opentelemetry/api": "next/dist/compiled/@opentelemetry/api",
+      },
       external: [
         ...knownBuiltins,
         ...[...knownBuiltins].map((specifier) => `node:${specifier}`),
