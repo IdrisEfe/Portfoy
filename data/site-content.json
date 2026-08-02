@@ -32,6 +32,13 @@
       "order": 2
     },
     {
+      "id": "spotify",
+      "label": "Spotify",
+      "href": "https://open.spotify.com/user/315dpafnk4ltjujjxqc2gjzllor4?si=e6d06874ffa349bc",
+      "visible": true,
+      "order": 3
+    },
+    {
       "id": "email",
       "label": "Email",
       "href": "mailto:i.efeyesildag@gmail.com",
