@@ -15,7 +15,16 @@ function materializeSymlinks(directory) {
     const stat = lstatSync(entryPath);
 
     if (stat.isSymbolicLink()) {
-      const target = realpathSync(entryPath);
+      let target;
+      try {
+        target = realpathSync(entryPath);
+      } catch (error) {
+        if (error?.code === "ENOENT") {
+          rmSync(entryPath, { force: true });
+          continue;
+        }
+        throw error;
+      }
       const targetStat = lstatSync(target);
       rmSync(entryPath, { recursive: targetStat.isDirectory(), force: true });
       cpSync(target, entryPath, {
