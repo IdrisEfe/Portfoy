@@ -121,6 +121,9 @@ function patchNextBrowserLogger() {
       minify: true,
       platform: "node",
       target: "es2022",
+      banner: {
+        js: 'import { createRequire as __iesyCreateRequire } from "node:module"; const require = __iesyCreateRequire(import.meta.url);',
+      },
       alias: {
         "@opentelemetry/api": "next/dist/compiled/@opentelemetry/api",
       },
