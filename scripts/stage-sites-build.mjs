@@ -40,8 +40,9 @@ function materializeSymlinks(directory) {
 }
 
 rmSync("dist", { recursive: true, force: true });
-cpSync(".open-next", "dist", { recursive: true, dereference: true });
-materializeSymlinks("dist");
 mkdirSync("dist/server", { recursive: true });
-writeFileSync("dist/server/index.js", 'export { default } from "../worker.js";\n', "utf8");
+cpSync(".open-next", "dist/server", { recursive: true, dereference: true });
+materializeSymlinks("dist/server");
+writeFileSync("dist/server/index.js", 'export { default } from "./worker.js";\n', "utf8");
+cpSync(".open-next/assets", "dist/assets", { recursive: true, dereference: true });
 cpSync(".openai", "dist/.openai", { recursive: true });
