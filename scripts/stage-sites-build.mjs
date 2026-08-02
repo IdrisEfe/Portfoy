@@ -13,19 +13,34 @@ import { join } from "node:path";
 function patchNextBrowserLogger() {
   const handlerPath = ".open-next/server-functions/default/handler.mjs";
   let handler = readFileSync(handlerPath, "utf8");
-  const fsRequire = /\brequire\((["'])fs\1\)/g;
-  const pathRequire = /\brequire\((["'])path\1\)/g;
+  const replacements = [
+    [/(?:\brequire\()(["'])(?:node:)?fs\1\)/g, "__iesyNodeFs"],
+    [/(?:\brequire\()(["'])(?:node:)?path\1\)/g, "__iesyNodePath"],
+    [/(?:\brequire\()(["'])(?:node:)?util\1\)/g, "__iesyNodeUtil"],
+    [/(?:\brequire\()(["'])node:crypto\1\)/g, "__iesyNodeCrypto"],
+    [/(?:\brequire\()(["'])node:timers\1\)/g, "__iesyNodeTimers"],
+    [
+      /(?:\brequire\()(["'])node:timers\/promises\1\)/g,
+      "__iesyNodeTimersPromises",
+    ],
+    [/(?:\brequire\()(["'])node:inspector\1\)/g, "__iesyNodeInspector"],
+  ];
 
-  if (!fsRequire.test(handler) && !pathRequire.test(handler)) {
+  if (!replacements.some(([pattern]) => pattern.test(handler))) {
     return;
   }
 
-  handler = handler
-    .replace(fsRequire, "__iesyNodeFs")
-    .replace(pathRequire, "__iesyNodePath");
+  for (const [pattern, replacement] of replacements) {
+    handler = handler.replace(pattern, replacement);
+  }
   handler =
     'import * as __iesyNodeFs from "node:fs";\n' +
     'import * as __iesyNodePath from "node:path";\n' +
+    'import * as __iesyNodeUtil from "node:util";\n' +
+    'import * as __iesyNodeCrypto from "node:crypto";\n' +
+    'import * as __iesyNodeTimers from "node:timers";\n' +
+    'import * as __iesyNodeTimersPromises from "node:timers/promises";\n' +
+    "const __iesyNodeInspector = { url: () => undefined };\n" +
     handler;
   writeFileSync(handlerPath, handler, "utf8");
 }
