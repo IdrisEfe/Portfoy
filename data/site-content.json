@@ -25,28 +25,83 @@
   ],
   "linkedinPosts": [],
   "showcase": [
-    { "id": "now", "type": "page", "title": "Now", "href": "/now", "visible": true },
-    { "id": "laboratory", "type": "page", "title": "Laboratory", "href": "/laboratory", "visible": true },
-    { "id": "journey", "type": "page", "title": "Journey", "href": "/journey", "visible": true }
+    {
+      "id": "now",
+      "type": "page",
+      "title": "Now",
+      "href": "/now",
+      "visible": true
+    },
+    {
+      "id": "laboratory",
+      "type": "page",
+      "title": "Laboratory",
+      "href": "/laboratory",
+      "visible": true
+    },
+    {
+      "id": "journey",
+      "type": "page",
+      "title": "Journey",
+      "href": "/journey",
+      "visible": true
+    }
   ],
   "skills": [
-    { "name": "Building", "items": ["Product thinking", "Rapid prototyping", "Systems design"] },
-    { "name": "Engineering", "items": ["Web applications", "APIs", "Automation"] },
-    { "name": "Exploring", "items": ["Creative coding", "Agentic systems", "Interactive media"] }
+    {
+      "name": "Building",
+      "items": [
+        "Product thinking",
+        "Rapid prototyping",
+        "Systems design"
+      ]
+    },
+    {
+      "name": "Engineering",
+      "items": [
+        "Web applications",
+        "APIs",
+        "Automation"
+      ]
+    },
+    {
+      "name": "Exploring",
+      "items": [
+        "Creative coding",
+        "Agentic systems",
+        "Interactive media"
+      ]
+    }
   ],
   "journey": [
-    { "year": "Now", "title": "Building in public", "body": "Turning active repositories, experiments, and learning into a living body of work." },
-    { "year": "Next", "title": "A wider laboratory", "body": "Small ideas become interactive systems, then useful products." },
-    { "year": "Always", "title": "Self-taught by design", "body": "Learning by making, documenting the process, and improving the next attempt." }
+    {
+      "year": "Now",
+      "title": "Building in public",
+      "body": "Turning active repositories, experiments, and learning into a living body of work."
+    },
+    {
+      "year": "Next",
+      "title": "A wider laboratory",
+      "body": "Small ideas become interactive systems, then useful products."
+    },
+    {
+      "year": "Always",
+      "title": "Self-taught by design",
+      "body": "Learning by making, documenting the process, and improving the next attempt."
+    }
   ],
-  "resume": { "url": "", "updatedAt": "", "visible": false },
+  "resume": {
+    "url": "",
+    "updatedAt": "",
+    "visible": false
+  },
   "analytics": {
     "publicMetrics": {
-      "totalVisits": false,
-      "countries": false,
-      "referrers": false,
-      "popularPages": false,
-      "projectClicks": false
+      "totalVisits": true,
+      "countries": true,
+      "referrers": true,
+      "popularPages": true,
+      "projectClicks": true
     }
   }
 }
