@@ -123,6 +123,7 @@ Visitors must explicitly choose which Project Laboratory experiment to load. Do 
 
 - Combine curated accomplishments with current activity.
 - GitHub-derived updates may refresh every 5–15 minutes.
+- Admin-published site content is read back from the configured GitHub repository through a no-cache refresh path with the checked-in JSON as a fallback, so local and deployed visitors can see the published version without requiring a local pull.
 - LinkedIn-related entries publish immediately after owner review and publication.
 - Present activity as a coherent narrative rather than a raw feed.
 - Clearly distinguish source, date, status, and whether an entry is manually curated or automatically derived when that distinction matters to users.
@@ -137,7 +138,7 @@ Visitors must explicitly choose which Project Laboratory experiment to load. Do 
   - abstract digital mask;
   - possible lightweight 3D interpretation of an authorized profile image.
 - Fast loading has priority over a photorealistic likeness.
-- The initial/default avatar mode should be an original interactive digital mask.
+- The initial/default avatar mode is now an original interactive 3D point-cloud face. The transforming digital mask remains available as an admin-selectable fallback.
 - The digital mask should constantly transform. Its motion must remain restrained enough to preserve readability and must slow down or become static under reduced-motion preferences.
 - The mask may react to cursor/pointer movement, scrolling, local time of day, and sound. Sound-reactive behavior must be optional, start muted, require explicit visitor activation, expose a clear mute control, and never request microphone access without a separate explicit explanation and permission action.
 - The mask should feel calm and welcoming by default, becoming more energetic through interaction.
@@ -296,7 +297,7 @@ If approved later:
 10. Final Fillout-versus-custom contact implementation, spam protection, data retention, and embed behavior. Initial bookings use Google Calendar, Google Meet, a 30-minute duration, the approved Istanbul-time availability windows, 24-hour minimum notice, a 10-minute buffer, a two-week horizon, and email-based cancellation/rescheduling.
 11. Analytics provider, privacy thresholds for published aggregates, retention, privacy disclosure, and cookie/consent requirements.
 12. Admin revision-history depth and media-storage requirements.
-13. Technical stack, content store/database, hosting, authentication provider, caching, and deployment architecture.
+13. Final hosting architecture. Cloudflare Workers with the official OpenNext adapter is the current preferred free-hosting candidate; deployment and production service connection still require explicit owner authorization.
 14. GitHub repository name, branching conventions, exact attribution/license terms, contribution policy, and deployment ownership. Repository visibility is public and reuse with attribution is intended.
 15. Whether and when to create the reusable personal-portfolio template.
 16. Final brand system: typography, palette, motifs, logo/mark, favicon, and motion language.

@@ -27,7 +27,7 @@ export function AdminDashboard() {
     const response = await fetch("/api/admin/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(state.content) });
     const result = await response.json() as { error?: string; destination?: string };
     if (!response.ok) { setNotice(result.error || "Publishing failed."); return; }
-    localStorage.setItem("iesy-admin-draft", JSON.stringify(state.content)); setNotice(`Published visible content to ${result.destination}. Your fuller draft remains in this browser.`);
+    localStorage.setItem("iesy-admin-draft", JSON.stringify(state.content)); localStorage.setItem("iesy-content-version", String(Date.now())); dispatchEvent(new Event("iesy-content-published")); setNotice(`Published visible content to ${result.destination}. Public pages now read the latest published version; your fuller draft remains in this browser.`);
   };
   if (state.loading) return <div className="admin-gate"><LoaderCircle className="spin" /><p>Checking the door…</p></div>;
   if (!state.authenticated || !state.content) return <div className="admin-gate"><p className="eyebrow">OWNER ACCESS ONLY</p><h1>The control room is locked.</h1><p>Configure the GitHub OAuth environment variables, then sign in with the approved owner account.</p><a className="primary-button" href="/api/auth/github"><LogIn size={18} /> Continue with GitHub</a><code>For local-only setup: ADMIN_DEV_BYPASS=true</code></div>;

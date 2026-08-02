@@ -6,8 +6,27 @@ import type { AdminSession } from "./admin-session";
 
 const contentPath = path.join(process.cwd(), "data", "site-content.json");
 
-export async function readSiteContent(): Promise<SiteContent> {
+async function readLocalSiteContent(): Promise<SiteContent> {
   return siteContentSchema.parse(JSON.parse(await readFile(contentPath, "utf8")));
+}
+
+async function readGitHubSiteContent(): Promise<SiteContent | null> {
+  const owner = process.env.GITHUB_CONTENT_OWNER; const repo = process.env.GITHUB_CONTENT_REPO; const branch = process.env.GITHUB_CONTENT_BRANCH || "main";
+  if (!owner || !repo) return null;
+  const endpoint = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/contents/data/site-content.json?ref=${encodeURIComponent(branch)}`;
+  const headers: Record<string, string> = { Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" };
+  if (process.env.GITHUB_TOKEN) headers.Authorization = `Bearer ${process.env.GITHUB_TOKEN}`;
+  try {
+    const response = await fetch(endpoint, { headers, cache: "no-store" });
+    if (!response.ok) return null;
+    const result = await response.json() as { content?: string; encoding?: string };
+    if (!result.content || result.encoding !== "base64") return null;
+    return siteContentSchema.parse(JSON.parse(Buffer.from(result.content.replace(/\n/g, ""), "base64").toString("utf8")));
+  } catch { return null; }
+}
+
+export async function readSiteContent(): Promise<SiteContent> {
+  return await readGitHubSiteContent() || readLocalSiteContent();
 }
 
 async function publishToGitHub(content: SiteContent, session: AdminSession) {

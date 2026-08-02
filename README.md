@@ -6,7 +6,7 @@ The evolving digital portfolio of **İdris Efe YEŞİLDAĞ**.
 
 - Responsive futuristic light/dark design
 - English/Turkish preference and bilingual homepage/navigation
-- Transforming interactive digital mask
+- Interactive 3D point-cloud face with an admin-selectable transforming-mask fallback
 - 30-second guided introduction with manual takeover and intent-aware destinations
 - Live GitHub repository catalog with ten-minute revalidation, search, and sorting
 - On-demand target, fluid, and digital-firework browser experiments
@@ -27,6 +27,14 @@ Use Node.js 20 or newer and pnpm.
 pnpm install
 pnpm dev
 ```
+
+On Windows, if `pnpm` is not installed globally, use the included launcher instead:
+
+```powershell
+.\dev.cmd
+```
+
+It automatically uses pnpm when available and otherwise finds the bundled Codex runtime. The development URL is fixed at `http://localhost:3000` for GitHub OAuth consistency.
 
 Production verification:
 
@@ -52,7 +60,7 @@ Copy `.env.example` to `.env.local`, keep `SITE_URL=http://localhost:3000`, conf
 
 For local development only, `ADMIN_DEV_BYPASS=true` unlocks the editor without OAuth. The bypass is ignored in production.
 
-Publishing writes only visible content into the public repository. Hidden records remain in the browser-local draft and are not published.
+Publishing writes only visible content into the public repository. Public pages read the latest published GitHub content on refresh and fall back to the checked-in JSON when GitHub is unavailable. Hidden records remain in the browser-local draft and are not published.
 
 ## Integration status
 
@@ -61,6 +69,10 @@ Publishing writes only visible content into the public repository. Hidden record
 - Fillout scheduling: embed is implemented; add the Fillout form ID and connect Google Calendar/Meet in Fillout.
 - Analytics: Umami tracking, custom project-click events, private credentials, and selective public aggregates are implemented; account credentials remain to be supplied.
 - Admin: GitHub OAuth, encrypted sessions, drafts, preview, GitHub content publishing, and asset uploads are implemented.
+
+## Deployment plan
+
+The final public deployment will remain a separate, owner-approved step. The current preferred free-hosting candidate is Cloudflare Workers using the official OpenNext adapter, because this portfolio includes server routes and may support business contact while Vercel Hobby is restricted to personal, non-commercial use. Before launch we will add the hosting adapter, configure production secrets outside Git, connect `iesy.me`, create a production GitHub OAuth app with `https://iesy.me/api/auth/github/callback`, and replace this section with the public-site link and final setup instructions.
 
 ## Ownership and reuse
 
