@@ -46,7 +46,9 @@ Create a GitHub OAuth app and set its callback to:
 http://localhost:3000/api/auth/github/callback
 ```
 
-Copy `.env.example` to `.env.local`, configure the OAuth credentials, set `ADMIN_GITHUB_USER_ID` to your immutable GitHub numeric ID, and generate a long random `ADMIN_SESSION_SECRET`. Set `GITHUB_CONTENT_REPO` after creating the public remote repository.
+The GitHub OAuth **Homepage URL** can be `http://localhost:3000`, but the separate **Authorization callback URL** must include the full `/api/auth/github/callback` path. Local development is pinned to port `3000`; if that port is occupied, stop the other process instead of accepting Next.js's fallback port.
+
+Copy `.env.example` to `.env.local`, keep `SITE_URL=http://localhost:3000`, configure the OAuth credentials, set `ADMIN_GITHUB_USER_ID` to your immutable GitHub numeric ID, and generate a long random `ADMIN_SESSION_SECRET`. Set `GITHUB_CONTENT_REPO` after creating the public remote repository.
 
 For local development only, `ADMIN_DEV_BYPASS=true` unlocks the editor without OAuth. The bypass is ignored in production.
 

@@ -23,11 +23,19 @@ async function run() {
   await page.waitForTimeout(700);
   const after = await fluid.evaluate((canvas) => canvas.toDataURL());
   await page.getByText("Unload").click({ force: true });
+  await page.locator(".lab-card").nth(2).click({ force: true });
+  const fireworks = page.locator(".experiment-canvas");
+  await page.waitForTimeout(500);
+  const fireworksIdle = await fireworks.getAttribute("data-active-particles");
+  await fireworks.click({ position: { x: 500, y: 260 } });
+  await page.waitForTimeout(100);
+  const fireworksAfterClick = Number(await fireworks.getAttribute("data-active-particles"));
+  await page.getByText("Unload").click({ force: true });
   await page.goto(`${baseUrl}/admin`, { waitUntil: "domcontentloaded" });
   await page.waitForTimeout(500);
   const adminHeading = await page.locator("h1").first().innerText();
   await browser.close();
-  process.stdout.write(`${JSON.stringify({ targetRendered: targetPixels > 1000, fluidChanged: before !== after, adminHeading, errors }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ targetRendered: targetPixels > 1000, fluidChanged: before !== after, fireworksIdle: fireworksIdle === "0", fireworksAfterClick: fireworksAfterClick > 0, adminHeading, errors }, null, 2)}\n`);
 }
 
 run().catch((error) => { console.error(error); process.exitCode = 1; });

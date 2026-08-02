@@ -26,9 +26,10 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
     let pointer = { x: 0, y: 0, dx: 0, dy: 0, active: false };
     let target = { x: .5, y: .5, radius: 34, phase: Math.random() * Math.PI * 2 };
     let renderedTarget = { x: 0, y: 0 };
-    const particles = Array.from({ length: type === "fluid" ? 360 : 110 }, () => ({
+    const particles = Array.from({ length: type === "fluid" ? 360 : 0 }, () => ({
       x: Math.random(), y: Math.random(), px: 0, py: 0, vx: 0, vy: 0, life: Math.random(), hue: Math.random(),
     }));
+    let fireworkParticles: Array<{ x: number; y: number; px: number; py: number; vx: number; vy: number; life: number; maxLife: number; hue: number }> = [];
     const resize = () => {
       const r = canvas.getBoundingClientRect(); const d = Math.min(devicePixelRatio, 2);
       canvas.width = r.width * d; canvas.height = r.height * d; ctx.setTransform(d, 0, 0, d, 0, 0);
@@ -47,9 +48,19 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
       if (Math.hypot(x - tx, y - ty) <= target.radius + 8) { score += 1; flash = 1; newTarget(); }
       else { misses += 1; flash = -1; }
     };
+    const launchFirework = (x: number, y: number) => {
+      const hue = Math.random();
+      fireworkParticles.push(...Array.from({ length: 90 }, (_, index) => {
+        const angle = (index / 90) * Math.PI * 2 + (Math.random() - .5) * .12;
+        const speed = 1.2 + Math.random() * 4.2;
+        const life = .75 + Math.random() * .55;
+        return { x, y, px: x, py: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, life, maxLife: life, hue: (hue + index / 270) % 1 };
+      }));
+    };
     const press = (event: PointerEvent) => {
-      const r = canvas.getBoundingClientRect(); shoot(event.clientX - r.left, event.clientY - r.top);
-      if (type === "fireworks") pointer.active = true;
+      const r = canvas.getBoundingClientRect(); const x = event.clientX - r.left; const y = event.clientY - r.top;
+      shoot(x, y);
+      if (type === "fireworks") launchFirework(x, y);
     };
     const key = (event: KeyboardEvent) => {
       if (event.code !== "Space" && event.code !== "Enter") return;
@@ -57,7 +68,7 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
     };
     const draw = () => {
       const { width, height } = canvas.getBoundingClientRect(); t += .016;
-      ctx.fillStyle = type === "fluid" ? "rgba(5,7,12,.065)" : "rgba(5,7,12,.16)"; ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = type === "fluid" ? "rgba(5,7,12,.09)" : "rgba(5,7,12,.16)"; ctx.fillRect(0, 0, width, height);
       if (type === "target") {
         const x = target.x * width + Math.sin(t * 1.3 + target.phase) * 10;
         const y = target.y * height + Math.cos(t * .9 + target.phase) * 8;
@@ -71,9 +82,8 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
         ctx.fillText(`SIGNALS ${score.toString().padStart(2, "0")}   MISSES ${misses.toString().padStart(2, "0")}`, 20, 28);
         ctx.fillStyle = "rgba(246,247,251,.55)"; ctx.fillText("CLICK / TAP TARGET · SPACE TO FIRE", 20, height - 22);
         flash *= .9;
-      } else {
+      } else if (type === "fluid") {
         particles.forEach((p, index) => {
-          if (type === "fluid") {
             const x = p.x * width; const y = p.y * height; p.px = x; p.py = y;
             const angle = Math.sin(p.x * 7 + t * .45) * 2.1 + Math.cos(p.y * 6 - t * .3) * 1.7;
             p.vx += Math.cos(angle) * .045; p.vy += Math.sin(angle) * .045;
@@ -85,16 +95,36 @@ function ExperimentCanvas({ type }: { type: Experiment }) {
                 p.vy += (dx / distance) * influence + pointer.dy * .018 * influence;
               }
             }
+            const margin = .075;
+            if (p.x < margin) p.vx += (margin - p.x) * .55;
+            if (p.x > 1 - margin) p.vx -= (p.x - (1 - margin)) * .55;
+            if (p.y < margin) p.vy += (margin - p.y) * .55;
+            if (p.y > 1 - margin) p.vy -= (p.y - (1 - margin)) * .55;
             p.vx *= .965; p.vy *= .965; p.x += p.vx / width; p.y += p.vy / height;
-            if (p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) { p.x = Math.random(); p.y = Math.random(); p.vx = 0; p.vy = 0; }
+            const speed = Math.hypot(p.vx, p.vy);
+            if (speed > 4) { p.vx = p.vx / speed * 4; p.vy = p.vy / speed * 4; }
+            if (p.x < 0 || p.x > 1 || p.y < 0 || p.y > 1) {
+              p.x = .08 + Math.random() * .84; p.y = .08 + Math.random() * .84; p.vx = 0; p.vy = 0;
+              p.px = p.x * width; p.py = p.y * height;
+              return;
+            }
             ctx.strokeStyle = index % 5 ? "rgba(124,92,255,.38)" : "rgba(215,255,100,.62)"; ctx.lineWidth = index % 7 === 0 ? 1.6 : .8;
             ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x * width, p.y * height); ctx.stroke();
-          } else {
-            p.life -= .006; if (p.life <= 0) { p.x = pointer.active ? pointer.x / width : Math.random(); p.y = pointer.active ? pointer.y / height : .35 + Math.random() * .3; p.vx = (Math.random() - .5) * 3; p.vy = (Math.random() - .5) * 3; p.life = 1; }
-            p.vy += .018; p.x += p.vx / width; p.y += p.vy / height;
-            ctx.fillStyle = index % 3 === 0 ? "#ff6b86" : index % 3 === 1 ? "#d7ff64" : "#7c5cff"; ctx.globalAlpha = p.life; ctx.fillRect(p.x * width, p.y * height, 2, 2);
-          }
         }); ctx.globalAlpha = 1; pointer.dx *= .76; pointer.dy *= .76;
+      } else {
+        fireworkParticles = fireworkParticles.filter((p) => {
+          p.life -= .016;
+          if (p.life <= 0) return false;
+          p.px = p.x; p.py = p.y; p.vy += .035; p.vx *= .992; p.vy *= .992; p.x += p.vx; p.y += p.vy;
+          const alpha = Math.max(0, p.life / p.maxLife);
+          ctx.strokeStyle = `hsla(${Math.round(p.hue * 360)}, 88%, 68%, ${alpha})`;
+          ctx.lineWidth = 1.2 + alpha;
+          ctx.beginPath(); ctx.moveTo(p.px, p.py); ctx.lineTo(p.x, p.y); ctx.stroke();
+          return p.x > -40 && p.x < width + 40 && p.y < height + 40;
+        });
+        canvas.dataset.activeParticles = String(fireworkParticles.length);
+        ctx.fillStyle = "rgba(246,247,251,.55)"; ctx.font = "12px monospace"; ctx.fillText("CLICK / TAP TO LAUNCH", 20, height - 22);
+        ctx.globalAlpha = 1;
       }
       raf = requestAnimationFrame(draw);
     };
