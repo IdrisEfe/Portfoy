@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BriefcaseBusiness, Code2, Mail, Moon, Music2, Sun } from "lucide-react";
-import { copy, socials } from "@/lib/content";
+import { copy, socialsById } from "@/lib/content";
 import { useSite } from "./site-provider";
 import { AudioControl } from "./audio-control";
 
@@ -32,10 +32,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     <footer className="site-footer">
       <div><span className="pulse-dot" /> {text.availability}</div>
       <div className="footer-socials">
-        <a href={socials[0].href} target="_blank" rel="noreferrer" aria-label="GitHub"><Code2 size={17} /></a>
-        <a href={socials[1].href} target="_blank" rel="noreferrer" aria-label="LinkedIn"><BriefcaseBusiness size={17} /></a>
-        <a href={socials[2].href} target="_blank" rel="noreferrer" aria-label="Spotify"><Music2 size={17} /></a>
-        <a href={socials[3].href} aria-label="Email"><Mail size={17} /></a>
+        {socialsById.github.visible && <a href={socialsById.github.href} target="_blank" rel="noreferrer" aria-label="GitHub"><Code2 size={17} /></a>}
+        {socialsById.linkedin.visible && <a href={socialsById.linkedin.href} target="_blank" rel="noreferrer" aria-label="LinkedIn"><BriefcaseBusiness size={17} /></a>}
+        {socialsById.spotify.visible && <a href={socialsById.spotify.href} target="_blank" rel="noreferrer" aria-label="Spotify"><Music2 size={17} /></a>}
+        {socialsById.email.visible && <a href={socialsById.email.href} aria-label="Email"><Mail size={17} /></a>}
       </div>
       <span>© {new Date().getFullYear()} İdris Efe YEŞİLDAĞ</span>
     </footer>

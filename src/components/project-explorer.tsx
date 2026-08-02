@@ -20,7 +20,7 @@ export function ProjectExplorer({ repositories, compact = false }: { repositorie
       </select>
     </div>}
     <div className="project-grid">
-      {visible.map((repo, index) => <a className="project-card" href={repo.html_url} target="_blank" rel="noreferrer" key={repo.id} style={{ "--index": index } as React.CSSProperties}>
+      {visible.map((repo, index) => <a className="project-card" href={repo.html_url} target="_blank" rel="noreferrer" key={repo.id} style={{ "--index": index } as React.CSSProperties} data-umami-event="project-click" data-umami-event-project={repo.name}>
         <div className="project-top"><span>{repo.fork ? "FORK" : repo.language ?? "PROJECT"}</span><ArrowUpRight size={18} /></div>
         <h3>{repo.name.replaceAll("_", " ")}</h3>
         <p>{repo.description || "An active repository in the making."}</p>

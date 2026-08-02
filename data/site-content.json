@@ -1,0 +1,51 @@
+{
+  "identity": {
+    "name": "İdris Efe YEŞİLDAĞ",
+    "en": {
+      "descriptor": "Self-taught ambitious builder",
+      "intro": "I turn questions into working systems, experiments, and stories worth following.",
+      "heroFirst": "I know what you want.",
+      "heroSecond": "Someone you’ll never forget.",
+      "cta": "Let’s start from here"
+    },
+    "tr": {
+      "descriptor": "Kendi kendini yetiştiren, hırslı bir üretici",
+      "intro": "Soruları çalışan sistemlere, deneylere ve takip etmeye değer hikâyelere dönüştürüyorum.",
+      "heroFirst": "Neden burada olduğunu biliyorum.",
+      "heroSecond": "Asla unutamayacağın biriyim.",
+      "cta": "Eee, ne duruyoruz?"
+    }
+  },
+  "socials": [
+    { "id": "github", "label": "GitHub", "href": "https://github.com/IdrisEfe", "visible": true, "order": 1 },
+    { "id": "linkedin", "label": "LinkedIn", "href": "https://www.linkedin.com/in/i-efe-ye%C5%9Filda%C4%9F-0a6687313/", "visible": true, "order": 2 },
+    { "id": "spotify", "label": "Spotify", "href": "https://open.spotify.com/user/315dpafnk4ltjujjxqc2gjzllor4?si=e6d06874ffa349bc", "visible": true, "order": 3 },
+    { "id": "email", "label": "Email", "href": "mailto:i.efeyesildag@gmail.com", "visible": true, "order": 4 }
+  ],
+  "linkedinPosts": [],
+  "showcase": [
+    { "id": "now", "type": "page", "title": "Now", "href": "/now", "visible": true },
+    { "id": "laboratory", "type": "page", "title": "Laboratory", "href": "/laboratory", "visible": true },
+    { "id": "journey", "type": "page", "title": "Journey", "href": "/journey", "visible": true }
+  ],
+  "skills": [
+    { "name": "Building", "items": ["Product thinking", "Rapid prototyping", "Systems design"] },
+    { "name": "Engineering", "items": ["Web applications", "APIs", "Automation"] },
+    { "name": "Exploring", "items": ["Creative coding", "Agentic systems", "Interactive media"] }
+  ],
+  "journey": [
+    { "year": "Now", "title": "Building in public", "body": "Turning active repositories, experiments, and learning into a living body of work." },
+    { "year": "Next", "title": "A wider laboratory", "body": "Small ideas become interactive systems, then useful products." },
+    { "year": "Always", "title": "Self-taught by design", "body": "Learning by making, documenting the process, and improving the next attempt." }
+  ],
+  "resume": { "url": "", "updatedAt": "", "visible": false },
+  "analytics": {
+    "publicMetrics": {
+      "totalVisits": false,
+      "countries": false,
+      "referrers": false,
+      "popularPages": false,
+      "projectClicks": false
+    }
+  }
+}
