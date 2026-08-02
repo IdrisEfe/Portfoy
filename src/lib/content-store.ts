@@ -1,10 +1,8 @@
-import { readFile, writeFile, mkdir } from "node:fs/promises";
-import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { siteContentSchema, type SiteContent } from "./site-schema";
 import type { AdminSession } from "./admin-session";
+import rawSiteContent from "../../data/site-content.json";
 
-const contentPath = path.join(process.cwd(), "data", "site-content.json");
 const configuredBranch = () => process.env.GITHUB_CONTENT_BRANCH || "content";
 type GitHubHeaders = Record<string, string>;
 
@@ -26,7 +24,12 @@ async function ensureGitHubBranch(owner: string, repo: string, branch: string, h
 }
 
 async function readLocalSiteContent(): Promise<SiteContent> {
-  return siteContentSchema.parse(JSON.parse(await readFile(contentPath, "utf8")));
+  return siteContentSchema.parse(rawSiteContent);
+}
+
+async function writeLocalContent(content: SiteContent) {
+  const [{ writeFile }, path] = await Promise.all([import("node:fs/promises"), import("node:path")]);
+  await writeFile(path.join(process.cwd(), "data", "site-content.json"), `${JSON.stringify(content, null, 2)}\n`, "utf8");
 }
 
 async function readGitHubSiteContent(): Promise<SiteContent | null> {
@@ -74,7 +77,7 @@ export async function publishSiteContent(input: unknown, session: AdminSession) 
   const publishedToGitHub = await publishToGitHub(publicContent, session);
   if (!publishedToGitHub) {
     if (process.env.NODE_ENV === "production") throw new Error("GitHub content publishing is not configured.");
-    await writeFile(contentPath, `${JSON.stringify(publicContent, null, 2)}\n`, "utf8");
+    await writeLocalContent(publicContent);
   }
   revalidatePath("/", "layout");
   return { content: publicContent, destination: publishedToGitHub ? `github/${publishedToGitHub}` : "local" };
@@ -94,6 +97,7 @@ export async function uploadAdminAsset(file: File, session: AdminSession) {
     return `https://raw.githubusercontent.com/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/${encodeURIComponent(branch)}/public/${relative.split("/").map(encodeURIComponent).join("/")}`;
   }
   if (process.env.NODE_ENV === "production") throw new Error("GitHub asset publishing is not configured.");
+  const [{ mkdir, writeFile }, path] = await Promise.all([import("node:fs/promises"), import("node:path")]);
   const destination = path.join(process.cwd(), "public", "uploads"); await mkdir(destination, { recursive: true }); await writeFile(path.join(destination, `${stamp}-${safeName}`), bytes);
   return `/${relative}`;
 }

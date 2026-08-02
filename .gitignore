@@ -9,6 +9,8 @@ out
 *.log
 *.tsbuildinfo
 .vercel
+.open-next
+.wrangler
 .DS_Store
 Thumbs.db
 qa-*.png
