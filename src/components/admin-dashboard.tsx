@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { BarChart3, Check, Eye, FileText, Layers3, Link2, LoaderCircle, LogIn, Plus, Save, Send, Trash2, UserRound } from "lucide-react";
-import type { SiteContent } from "@/lib/site-schema";
+import { siteContentSchema, type SiteContent } from "@/lib/site-schema";
 
 type State = { loading: boolean; authenticated: boolean; user?: string; content?: SiteContent; error?: string };
 type Tab = "identity" | "sections" | "socials" | "linkedin" | "resume" | "analytics";
@@ -17,7 +17,17 @@ export function AdminDashboard() {
     if (!response.ok) { setState({ loading: false, authenticated: false }); return; }
     const result = await response.json() as { authenticated: boolean; user: string; content: SiteContent };
     const draft = localStorage.getItem("iesy-admin-draft");
-    setState({ loading: false, authenticated: true, user: result.user, content: draft ? JSON.parse(draft) as SiteContent : result.content });
+    let content = result.content;
+    if (draft) {
+      try {
+        content = siteContentSchema.parse(JSON.parse(draft));
+        localStorage.setItem("iesy-admin-draft", JSON.stringify(content));
+      } catch {
+        localStorage.removeItem("iesy-admin-draft");
+        setNotice("An incompatible browser draft was removed. The latest published content has been loaded.");
+      }
+    }
+    setState({ loading: false, authenticated: true, user: result.user, content });
   }, []);
   useEffect(() => { const frame = requestAnimationFrame(() => { void load(); }); return () => cancelAnimationFrame(frame); }, [load]);
   const update = (content: SiteContent) => setState((current) => ({ ...current, content }));
