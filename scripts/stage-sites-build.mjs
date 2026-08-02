@@ -94,7 +94,7 @@ function patchNextBrowserLogger() {
   handler = handler.replace(
     /function externalRequire\([^)]*\)\s*\{/,
     (match) =>
-      `${match}if (__iesyExternalModules.has(arguments[0])) return __iesyExternalModules.get(arguments[0]);`,
+      `${match}if (__iesyExternalModules.has(arguments[0])) return __iesyExternalModules.get(arguments[0]);console.error("IESY_EXTERNAL_REQUIRE_MISS", arguments[0]);`,
   );
   if (!handler.includes("__iesyExternalModules.has(arguments[0])")) {
     throw new Error("Could not patch the Turbopack external module loader.");
