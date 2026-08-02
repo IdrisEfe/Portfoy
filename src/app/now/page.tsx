@@ -1,0 +1,5 @@
+import type { Metadata } from "next";
+import { PageHeading } from "@/components/page-heading";
+import { getRepositories } from "@/lib/github";
+export const metadata: Metadata = { title: "Now" };
+export default async function NowPage() { const repos = (await getRepositories()).slice(0, 5); return <div className="page-wrap"><PageHeading index="03" eyebrow="A LIVING LOG / AUGUST 2026" title="What has my attention now." body="A readable stream of building, learning, and ideas in motion. GitHub updates automatically; curated social notes will join it through the admin workflow." /><div className="timeline-list">{repos.map((repo, i) => <article key={repo.id}><span>{String(i + 1).padStart(2, "0")}</span><div><p className="eyebrow">GITHUB · {new Date(repo.pushed_at).toLocaleDateString()}</p><h2>Moved {repo.name.replaceAll("_", " ")} forward.</h2><p>{repo.description || "An active repository received another iteration."}</p></div><a href={repo.html_url} target="_blank" rel="noreferrer">Inspect repository ↗</a></article>)}</div></div>; }

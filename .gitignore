@@ -1,0 +1,15 @@
+node_modules
+.pnpm-store
+.next
+out
+.env
+.env.local
+.env.*.local
+!.env.example
+*.log
+*.tsbuildinfo
+.vercel
+.DS_Store
+Thumbs.db
+qa-*.png
+server*.log
