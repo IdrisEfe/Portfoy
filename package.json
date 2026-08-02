@@ -4,14 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
-    "build": "opennextjs-cloudflare build && node scripts/stage-sites-build.mjs",
+    "build": "next build && opennextjs-cloudflare build --skipNextBuild && node scripts/stage-sites-build.mjs",
     "build:next": "next build",
-    "build:cloudflare": "opennextjs-cloudflare build",
-    "preview:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "build:cloudflare": "next build && opennextjs-cloudflare build --skipNextBuild",
+    "preview:cloudflare": "next build && opennextjs-cloudflare build --skipNextBuild && opennextjs-cloudflare preview",
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "deploy:cloudflare": "opennextjs-cloudflare build && opennextjs-cloudflare deploy"
+    "deploy:cloudflare": "next build && opennextjs-cloudflare build --skipNextBuild && opennextjs-cloudflare deploy"
   },
   "dependencies": {
     "@next/third-parties": "latest",
