@@ -8,42 +8,49 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
+import { builtinModules } from "node:module";
 import { join } from "node:path";
 
 function patchNextBrowserLogger() {
   const handlerPath = ".open-next/server-functions/default/handler.mjs";
   let handler = readFileSync(handlerPath, "utf8");
-  const replacements = [
-    [/(?:\brequire\()(["'])(?:node:)?fs\1\)/g, "__iesyNodeFs"],
-    [/(?:\brequire\()(["'])(?:node:)?path\1\)/g, "__iesyNodePath"],
-    [/(?:\brequire\()(["'])(?:node:)?util\1\)/g, "__iesyNodeUtil"],
-    [/(?:\brequire\()(["'])node:crypto\1\)/g, "__iesyNodeCrypto"],
-    [/(?:\brequire\()(["'])node:timers\1\)/g, "__iesyNodeTimers"],
-    [
-      /(?:\brequire\()(["'])node:timers\/promises\1\)/g,
-      "__iesyNodeTimersPromises",
-    ],
-    [/(?:\brequire\()(["'])node:inspector\1\)/g, "__iesyNodeInspector"],
-  ];
+  const knownBuiltins = new Set(
+    builtinModules.map((specifier) => specifier.replace(/^node:/, "")),
+  );
+  const requirePattern =
+    /\brequire\((["'])((?:node:)?[a-zA-Z0-9_./-]+)\1\)/g;
+  const replacements = new Map();
 
-  if (!replacements.some(([pattern]) => pattern.test(handler))) {
+  for (const match of handler.matchAll(requirePattern)) {
+    const normalized = match[2].replace(/^node:/, "");
+    if (knownBuiltins.has(normalized) && !replacements.has(normalized)) {
+      replacements.set(normalized, `__iesyNodeBuiltin${replacements.size}`);
+    }
+  }
+
+  if (replacements.size === 0) {
     return;
   }
 
-  for (const [pattern, replacement] of replacements) {
-    handler = handler.replace(pattern, replacement);
+  const imports = [];
+  for (const [specifier, identifier] of replacements) {
+    const escapedSpecifier = specifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const pattern = new RegExp(
+      `\\brequire\\((["'])(?:node:)?${escapedSpecifier}\\1\\)`,
+      "g",
+    );
+    handler = handler.replace(pattern, identifier);
+
+    if (specifier === "inspector") {
+      imports.push(`const ${identifier} = { url: () => undefined };`);
+    } else {
+      imports.push(
+        `import * as ${identifier}Module from "node:${specifier}";`,
+        `const ${identifier} = { ...${identifier}Module };`,
+      );
+    }
   }
-  handler =
-    'import * as __iesyNodeFs from "node:fs";\n' +
-    'import * as __iesyNodePath from "node:path";\n' +
-    'import * as __iesyNodeUtil from "node:util";\n' +
-    'import * as __iesyNodeCrypto from "node:crypto";\n' +
-    'import * as __iesyNodeTimersModule from "node:timers";\n' +
-    'import * as __iesyNodeTimersPromisesModule from "node:timers/promises";\n' +
-    "const __iesyNodeTimers = { ...__iesyNodeTimersModule };\n" +
-    "const __iesyNodeTimersPromises = { ...__iesyNodeTimersPromisesModule };\n" +
-    "const __iesyNodeInspector = { url: () => undefined };\n" +
-    handler;
+  handler = imports.join("\n") + "\n" + handler;
   writeFileSync(handlerPath, handler, "utf8");
 }
 
