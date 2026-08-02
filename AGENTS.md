@@ -4,6 +4,8 @@
 
 This project is in implementation mode. The owner explicitly authorized implementation on 2026-08-02. Build iteratively from this brief, preserve unresolved items as configurable decisions, and do not deploy or connect production external services without explicit authorization.
 
+The owner authorized public deployment on 2026-08-02. The current public hosting URL is `https://iesy-me-portfolio.iesy.chatgpt.site`. The intended custom domain remains `iesy.me`; DNS ownership verification and production GitHub OAuth credentials are still owner-controlled setup steps.
+
 When implementation is authorized, treat this file as the canonical product direction. Preserve decisions here unless the owner explicitly changes them. Record meaningful new product decisions in this file.
 
 ## Product vision

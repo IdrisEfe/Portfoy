@@ -2,6 +2,8 @@
 
 The evolving digital portfolio of **İdris Efe YEŞİLDAĞ**.
 
+**Live site:** [iesy-me-portfolio.iesy.chatgpt.site](https://iesy-me-portfolio.iesy.chatgpt.site)
+
 ## Included in the current implementation
 
 - Responsive futuristic light/dark design
@@ -72,9 +74,18 @@ Publishing writes only visible content into the public repository. Public pages 
 - Analytics: Umami tracking, custom project-click events, private credentials, and selective public aggregates are implemented; account credentials remain to be supplied.
 - Admin: GitHub OAuth, encrypted sessions, drafts, preview, GitHub content publishing, and asset uploads are implemented.
 
-## Deployment plan
+## Deployment
 
-The final public deployment will remain a separate, owner-approved step. The current preferred free-hosting candidate is Cloudflare Workers using the official OpenNext adapter, because this portfolio includes server routes and may support business contact while Vercel Hobby is restricted to personal, non-commercial use. Before launch we will add the hosting adapter, configure production secrets outside Git, connect `iesy.me`, create a production GitHub OAuth app with `https://iesy.me/api/auth/github/callback`, and replace this section with the public-site link and final setup instructions.
+The portfolio is publicly hosted at [iesy-me-portfolio.iesy.chatgpt.site](https://iesy-me-portfolio.iesy.chatgpt.site) using the Cloudflare-compatible OpenNext build.
+
+The custom `iesy.me` domain and production GitHub OAuth app are the remaining owner-controlled setup steps. Until the custom domain is connected, configure the production OAuth app with:
+
+```text
+Homepage URL: https://iesy-me-portfolio.iesy.chatgpt.site
+Callback URL: https://iesy-me-portfolio.iesy.chatgpt.site/api/auth/github/callback
+```
+
+After `iesy.me` becomes active, change both the OAuth URLs and the production `SITE_URL` to the custom domain.
 
 ## Ownership and reuse
 
