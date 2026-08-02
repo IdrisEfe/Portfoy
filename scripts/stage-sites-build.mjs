@@ -8,11 +8,12 @@ import {
   rmSync,
   writeFileSync,
 } from "node:fs";
-import { builtinModules } from "node:module";
-import { join } from "node:path";
+import { builtinModules, createRequire } from "node:module";
+import { dirname, join, relative, resolve } from "node:path";
 
 function patchNextBrowserLogger() {
   const handlerPath = ".open-next/server-functions/default/handler.mjs";
+  const handlerRequire = createRequire(resolve(handlerPath));
   let handler = readFileSync(handlerPath, "utf8");
   const knownBuiltins = new Set(
     builtinModules.map((specifier) => specifier.replace(/^node:/, "")),
@@ -92,8 +93,15 @@ function patchNextBrowserLogger() {
         `const ${identifier} = { ...(${identifier}Module.default ?? ${identifier}Module) };`,
       );
     } else {
+      let importSpecifier = relative(
+        dirname(handlerPath),
+        handlerRequire.resolve(specifier),
+      ).replaceAll("\\", "/");
+      if (!importSpecifier.startsWith(".")) {
+        importSpecifier = `./${importSpecifier}`;
+      }
       imports.push(
-        `import * as ${identifier}Module from ${JSON.stringify(specifier)};`,
+        `import * as ${identifier}Module from ${JSON.stringify(importSpecifier)};`,
         `const ${identifier} = ${identifier}Module.default ?? ${identifier}Module;`,
       );
     }
