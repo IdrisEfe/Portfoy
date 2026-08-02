@@ -2,12 +2,33 @@ import {
   cpSync,
   lstatSync,
   mkdirSync,
+  readFileSync,
   readdirSync,
   realpathSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+
+function patchNextBrowserLogger() {
+  const handlerPath = ".open-next/server-functions/default/handler.mjs";
+  let handler = readFileSync(handlerPath, "utf8");
+  const fsRequire = /\brequire\((["'])fs\1\)/g;
+  const pathRequire = /\brequire\((["'])path\1\)/g;
+
+  if (!fsRequire.test(handler) && !pathRequire.test(handler)) {
+    return;
+  }
+
+  handler = handler
+    .replace(fsRequire, "__iesyNodeFs")
+    .replace(pathRequire, "__iesyNodePath");
+  handler =
+    'import * as __iesyNodeFs from "node:fs";\n' +
+    'import * as __iesyNodePath from "node:path";\n' +
+    handler;
+  writeFileSync(handlerPath, handler, "utf8");
+}
 
 function materializeSymlinks(directory) {
   for (const entry of readdirSync(directory)) {
@@ -39,6 +60,7 @@ function materializeSymlinks(directory) {
   }
 }
 
+patchNextBrowserLogger();
 rmSync("dist", { recursive: true, force: true });
 mkdirSync("dist/server", { recursive: true });
 cpSync(".open-next", "dist/server", { recursive: true, dereference: true });
