@@ -82,6 +82,24 @@ function patchNextBrowserLogger() {
       );
     }
   }
+
+  const externalEntries = [...replacements].map(
+    ([specifier, { identifier }]) =>
+      `[${JSON.stringify(specifier)}, ${identifier}]`,
+  );
+  imports.push(
+    `const __iesyExternalModules = new Map([${externalEntries.join(",")}]);`,
+  );
+
+  handler = handler.replace(
+    /function externalRequire\([^)]*\)\s*\{/,
+    (match) =>
+      `${match}if (__iesyExternalModules.has(arguments[0])) return __iesyExternalModules.get(arguments[0]);`,
+  );
+  if (!handler.includes("__iesyExternalModules.has(arguments[0])")) {
+    throw new Error("Could not patch the Turbopack external module loader.");
+  }
+
   handler = imports.join("\n") + "\n" + handler;
   writeFileSync(handlerPath, handler, "utf8");
 }
