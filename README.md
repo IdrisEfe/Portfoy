@@ -2,7 +2,7 @@
 
 The evolving digital portfolio of **İdris Efe YEŞİLDAĞ**.
 
-**Live site:** [iesy-me-portfolio.iesy.chatgpt.site](https://iesy-me-portfolio.iesy.chatgpt.site)
+**Live site:** [iesy-me-portfolio.vercel.app](https://iesy-me-portfolio.vercel.app)
 
 ## Included in the current implementation
 
@@ -76,13 +76,13 @@ Publishing writes only visible content into the public repository. Public pages 
 
 ## Deployment
 
-The portfolio is publicly hosted at [iesy-me-portfolio.iesy.chatgpt.site](https://iesy-me-portfolio.iesy.chatgpt.site) using the Cloudflare-compatible OpenNext build.
+The portfolio is publicly hosted at [iesy-me-portfolio.vercel.app](https://iesy-me-portfolio.vercel.app) on Vercel's native Next.js runtime.
 
 The custom `iesy.me` domain and production GitHub OAuth app are the remaining owner-controlled setup steps. Until the custom domain is connected, configure the production OAuth app with:
 
 ```text
-Homepage URL: https://iesy-me-portfolio.iesy.chatgpt.site
-Callback URL: https://iesy-me-portfolio.iesy.chatgpt.site/api/auth/github/callback
+Homepage URL: https://iesy-me-portfolio.vercel.app
+Callback URL: https://iesy-me-portfolio.vercel.app/api/auth/github/callback
 ```
 
 After `iesy.me` becomes active, change both the OAuth URLs and the production `SITE_URL` to the custom domain.
